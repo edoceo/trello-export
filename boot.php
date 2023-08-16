@@ -6,11 +6,6 @@
 define('TRELLO_KEY', getenv('TRELLO_KEY'));
 define('TRELLO_TOK', getenv('TRELLO_TOKEN'));
 
-if (empty(TRELLO_KEY) || empty(TRELLO_TOK)) {
-	echo "You must set the TRELLO_KEY and TRELLO_TOKEN environment vars before running this script\n";
-	exit(1);
-}
-
 define('EXPORT_PATH', sprintf('%s/trello-export-data', __DIR__));
 define('EXPORT_PATH_BOARD', sprintf('%s/board', EXPORT_PATH));
 define('EXPORT_PATH_LIST', sprintf('%s/list', EXPORT_PATH));
@@ -22,6 +17,22 @@ _mkdir(EXPORT_PATH_BOARD);
 _mkdir(EXPORT_PATH_LIST);
 _mkdir(EXPORT_PATH_CARD);
 _mkdir(EXPORT_PATH_USER);
+
+
+function _curl_del($url)
+{
+	echo "_curl_del($url)\n";
+
+	$url = sprintf('%s?key=%s&token=%s&fields=all', $url, TRELLO_KEY, TRELLO_TOK);
+	$req = curl_init($url);
+	curl_setopt($req, CURLOPT_BINARYTRANSFER, true);
+	curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($req, CURLOPT_CUSTOMREQUEST, 'DELETE');
+	$ret = curl_exec($req);
+	$inf = curl_getinfo($req);
+	curl_close($req);
+	sleep(1);
+}
 
 
 function _curl_get($url)
